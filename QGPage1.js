@@ -12,10 +12,15 @@ let defaultQuotes = [
     "The night teaches what the day forgets."
 ];
 
+let storedQuotes = [];
 
-let storedQuotes = JSON.parse(localStorage.getItem("quotes"));
+try {
+    storedQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
+} catch (error) {
+    storedQuotes = [];
+}
 
-let quotes = storedQuotes ? storedQuotes : defaultQuotes;
+let quotes = storedQuotes.length ? storedQuotes : defaultQuotes;
 
 
 function generateQuote(){
@@ -49,3 +54,5 @@ function addQuote(){
 
 generateBtn.addEventListener("click", generateQuote);
 addQuoteBtn.addEventListener("click", addQuote);
+
+generateQuote();
