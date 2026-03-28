@@ -8,7 +8,7 @@ body {
     background: linear-gradient(135deg, #ffffff 0%, #f7efe4 45%, #f1e6dc 100%);
     color: #2b2b2b;
     min-height: 100vh;
-    padding: 1rem;
+    padding: 0;
 }
 
 .top-links {
@@ -119,6 +119,7 @@ body {
     padding: 2rem;
     text-align: center;
     width: min(95%, 500px);
+    margin: 1.5rem auto 0;
     box-shadow: 0 14px 35px rgba(218, 137, 96, 0.18);
 }
 
