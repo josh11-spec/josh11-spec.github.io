@@ -344,6 +344,27 @@ input::placeholder {
     box-shadow: 0 14px 35px rgba(255, 0, 0, 0.35);
 }
 
+.dark-mode .site-header {
+    background: rgba(8, 8, 8, 0.92);
+    border-color: rgba(255, 0, 0, 0.3);
+    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.35);
+}
+
+.dark-mode .logo {
+    color: #ff9a9a;
+}
+
+.dark-mode .main-nav a {
+    color: #f0d0cc;
+    background: transparent;
+}
+
+.dark-mode .main-nav a:hover,
+.dark-mode .main-nav a.active {
+    background: rgba(255, 75, 75, 0.2);
+    color: #fff;
+}
+
 .dark-mode .top-links {
     gap: 0.75rem;
 }

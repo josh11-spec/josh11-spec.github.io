@@ -266,6 +266,26 @@ body {
     background: #ff7171;
 }
 
+.dark-mode .site-header {
+    background: rgba(8, 8, 8, 0.92);
+    border-color: rgba(255, 45, 45, 0.35);
+    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.35);
+}
+
+.dark-mode .logo {
+    color: #ffb8b8;
+}
+
+.dark-mode .main-nav a {
+    color: #fbe1df;
+}
+
+.dark-mode .main-nav a:hover,
+.dark-mode .main-nav a.active {
+    background: rgba(255, 80, 80, 0.18);
+    color: #fff;
+}
+
 @media (max-width: 720px) {
     .site-header {
         flex-direction: column;
