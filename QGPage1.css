@@ -19,6 +19,10 @@ body {
     top: 1rem;
     left: 1rem;
     z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
 }
 
 .back-home {
@@ -37,6 +41,21 @@ body {
     color: #ffffff;
     background: rgba(255, 161, 122, 0.95);
     box-shadow: 0 6px 20px rgba(218, 137, 96, 0.35);
+}
+
+.theme-toggle {
+    background: #ffb98b;
+    color: #4e2b18;
+    border: 1px solid rgba(218, 137, 96, 0.65);
+    padding: 0.75rem 1rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    font-weight: 600;
+}
+
+.theme-toggle:hover {
+    background: #ffd3b7;
 }
 
 .container {
@@ -257,6 +276,96 @@ input::placeholder {
 
 .quote-table td {
     color: #5b4232;
+}
+
+.dark-mode {
+    background: linear-gradient(135deg, #000 0%, #080808 45%, #161616 100%);
+    color: #f8f8f8;
+}
+
+.dark-mode .container {
+    background: rgba(8, 8, 8, 0.95);
+    border-color: rgba(255, 0, 0, 0.3);
+    box-shadow: 0 14px 35px rgba(255, 0, 0, 0.35);
+}
+
+.dark-mode .top-links {
+    gap: 0.75rem;
+}
+
+.dark-mode .back-home {
+    color: #ff4c4c;
+    background: rgba(0, 0, 0, 0.6);
+    border-color: rgba(255, 0, 0, 0.6);
+    box-shadow: 0 4px 16px rgba(255, 0, 0, 0.45);
+}
+
+.dark-mode .theme-toggle {
+    background: #d50000;
+    color: #fff;
+    border-color: rgba(255, 90, 90, 0.7);
+    box-shadow: 0 8px 16px rgba(255, 0, 0, 0.4);
+}
+
+.dark-mode .theme-toggle:hover {
+    background: #ff3c3c;
+}
+
+.dark-mode .quote-box {
+    background: rgba(17, 17, 17, 0.88);
+    border-left-color: #ff2f2f;
+    color: #f8f8f8;
+}
+
+.dark-mode button {
+    background: #d50000;
+    color: #fff;
+    border-color: rgba(255, 90, 90, 0.7);
+    box-shadow: 0 8px 16px rgba(255, 0, 0, 0.4);
+}
+
+.dark-mode button:hover {
+    background: #ff3c3c;
+}
+
+.dark-mode input {
+    background: rgba(22, 22, 22, 0.9);
+    color: #f8f8f8;
+    border-color: rgba(255, 0, 0, 0.4);
+}
+
+.dark-mode .add-quote-section,
+.dark-mode .verification-section,
+.dark-mode .user-panel-card,
+.dark-mode .quote-table {
+    background: rgba(17, 17, 17, 0.9);
+    border-color: rgba(255, 0, 0, 0.3);
+}
+
+.dark-mode .quote-table th {
+    background: rgba(255, 0, 0, 0.12);
+    color: #f9f9f9;
+}
+
+.dark-mode .quote-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.dark-mode .public-table th {
+    background: rgba(255, 0, 0, 0.12);
+}
+
+.dark-mode .public-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.dark-mode .login-status,
+.dark-mode .login-note,
+.dark-mode .verification-hint,
+.dark-mode .user-panel-card p,
+.dark-mode .quote-table td,
+.dark-mode .public-table td {
+    color: #e4e4e4;
 }
 
 

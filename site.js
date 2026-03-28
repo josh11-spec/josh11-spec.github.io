@@ -1,7 +1,48 @@
 const STORAGE_KEYS = {
     USERS: "quoteGenUsers",
-    CURRENT_USER: "quoteGenCurrentUser"
+    CURRENT_USER: "quoteGenCurrentUser",
+    THEME: "quoteGenTheme"
 };
+
+function getSavedTheme() {
+    const stored = localStorage.getItem(STORAGE_KEYS.THEME);
+    return stored === "dark" ? "dark" : "light";
+}
+
+function updateThemeButton(theme) {
+    const btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    btn.textContent = theme === "dark" ? "Light Mode" : "Dark Mode";
+}
+
+function applyTheme(theme) {
+    const body = document.body;
+    if (!body) return;
+    body.classList.toggle("dark-mode", theme === "dark");
+    localStorage.setItem(STORAGE_KEYS.THEME, theme);
+    updateThemeButton(theme);
+}
+
+function initThemeToggle() {
+    const btn = document.getElementById("themeToggle");
+    if (!btn) return;
+    btn.addEventListener("click", function () {
+        const nextTheme = document.body.classList.contains("dark-mode") ? "light" : "dark";
+        applyTheme(nextTheme);
+    });
+    updateThemeButton(getSavedTheme());
+}
+
+function initTheme() {
+    applyTheme(getSavedTheme());
+    initThemeToggle();
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initTheme);
+} else {
+    initTheme();
+}
 
 function getUsers() {
     try {
