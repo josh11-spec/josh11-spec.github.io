@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Quote Admin</title>
+    <link rel="stylesheet" href="QGPage1.css">
+</head>
+<body>
+    <div class="top-links">
+        <a class="back-home" href="index.html">← Home</a>
+        <a class="back-home" href="QGPage1.html">Generator</a>
+    </div>
+
+    <div class="container">
+        <h1>Community Access</h1>
+        <div id="adminStatus" class="login-status"></div>
+
+        <div id="passwordSection">
+            <label for="adminPassword">Enter admin password</label>
+            <input type="password" id="adminPassword" placeholder="Password">
+            <button id="unlockBtn">Unlock Community Quotes</button>
+        </div>
+
+        <div id="communitySection" class="hidden">
+            <p class="login-note">This area is protected. Only authorized users can view and delete submitted quotes.</p>
+            <table class="quote-table">
+                <thead>
+                    <tr>
+                        <th>Quote</th>
+                        <th>Author</th>
+                        <th>Words</th>
+                        <th>Added</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="communityQuoteBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="site.js"></script>
+    <script>
+        const ADMIN_PASSWORD = 'GenratorQ';
+        const unlockBtn = document.getElementById('unlockBtn');
+        const passwordInput = document.getElementById('adminPassword');
+        const adminStatus = document.getElementById('adminStatus');
+        const communitySection = document.getElementById('communitySection');
+        const communityQuoteBody = document.getElementById('communityQuoteBody');
+        const passwordSection = document.getElementById('passwordSection');
+
+        function showStatus(message, isError = false) {
+            adminStatus.innerHTML = `<p>${escapeHtml(message)}</p>`;
+            adminStatus.style.color = isError ? '#ff8a8a' : '#d1d1d1';
+        }
+
+        function renderCommunityQuotes() {
+            const quotes = getAllUserQuotes();
+            communityQuoteBody.innerHTML = '';
+
+            if (!quotes.length) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="5">No community quotes have been submitted yet.</td>';
+                communityQuoteBody.appendChild(row);
+                return;
+            }
+
+            quotes.forEach((quote) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${escapeHtml(quote.text)}</td>
+                    <td>${escapeHtml(quote.author)}</td>
+                    <td>${quote.wordCount}</td>
+                    <td>${formatShortDate(quote.addedAt)}</td>
+                    <td><button class="delete-btn" data-id="${escapeHtml(quote.id)}">Delete</button></td>
+                `;
+                communityQuoteBody.appendChild(row);
+            });
+
+            communityQuoteBody.querySelectorAll('.delete-btn').forEach((button) => {
+                button.addEventListener('click', function () {
+                    const quoteId = this.dataset.id;
+                    deleteCommunityQuote(quoteId);
+                    renderCommunityQuotes();
+                });
+            });
+        }
+
+        unlockBtn.addEventListener('click', function () {
+            const password = passwordInput.value;
+            if (password !== ADMIN_PASSWORD) {
+                showStatus('Wrong password. Access denied.', true);
+                return;
+            }
+
+            showStatus('Access granted. Community quotes are now visible.');
+            passwordSection.classList.add('hidden');
+            communitySection.classList.remove('hidden');
+            renderCommunityQuotes();
+        });
+
+        showStatus('Enter the admin password to view and delete community quotes.');
+    </script>
+</body>
+</html>

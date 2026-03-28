@@ -34,6 +34,16 @@ function getUser(username) {
     return users[normalizeUsername(username)] || null;
 }
 
+function getQuoteId(user, quote) {
+    if (quote.id) {
+        return quote.id;
+    }
+
+    const id = `${normalizeUsername(user.username)}|${quote.addedAt}|${btoa(unescape(encodeURIComponent(String(quote.text).slice(0, 64))))}`;
+    quote.id = id;
+    return id;
+}
+
 function getAllUserQuotes() {
     const users = getUsers();
     const allQuotes = [];
@@ -42,7 +52,10 @@ function getAllUserQuotes() {
         if (!Array.isArray(user.quotes)) return;
 
         user.quotes.forEach((quote) => {
+            const id = getQuoteId(user, quote);
             allQuotes.push({
+                id,
+                userKey: user.username,
                 author: user.displayName || user.username,
                 text: quote.text,
                 wordCount: quote.wordCount,
@@ -52,6 +65,32 @@ function getAllUserQuotes() {
     });
 
     return allQuotes.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
+}
+
+function deleteCommunityQuote(quoteId) {
+    const users = getUsers();
+    let deleted = false;
+
+    Object.values(users).forEach((user) => {
+        if (!Array.isArray(user.quotes) || deleted) return;
+
+        const quoteIndex = user.quotes.findIndex((quote) => {
+            if (quote.id && quote.id === quoteId) return true;
+            const fallbackId = `${normalizeUsername(user.username)}|${quote.addedAt}|${btoa(unescape(encodeURIComponent(String(quote.text).slice(0, 64))))}`;
+            return fallbackId === quoteId;
+        });
+
+        if (quoteIndex >= 0) {
+            user.quotes.splice(quoteIndex, 1);
+            deleted = true;
+        }
+    });
+
+    if (deleted) {
+        saveUsers(users);
+    }
+
+    return deleted;
 }
 
 function hashPassword(password) {
@@ -155,11 +194,13 @@ function addUserQuote(text) {
     if (!quote) return null;
 
     const wordCount = quote.split(/\s+/).filter(Boolean).length;
-    user.quotes.push({
+    const newQuote = {
+        id: `${user.username}|${Date.now()}|${Math.random().toString(36).slice(2, 10)}`,
         text: quote,
         wordCount,
         addedAt: new Date().toISOString()
-    });
+    };
+    user.quotes.push(newQuote);
 
     saveUser(user);
     return user;
