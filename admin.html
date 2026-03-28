@@ -81,11 +81,16 @@
         function getAllQuotesWithSource() {
             const users = getUsers();
             const quoteRows = [];
+            const seenKeys = new Set();
 
             Object.values(users).forEach((user) => {
                 if (!Array.isArray(user.quotes)) return;
+
                 user.quotes.forEach((quote, index) => {
+                    const key = `${user.username}|${quote.text}|${quote.addedAt}`;
+                    seenKeys.add(key);
                     quoteRows.push({
+                        type: 'user',
                         username: user.username,
                         displayName: user.displayName,
                         text: quote.text,
@@ -96,7 +101,32 @@
                 });
             });
 
-            return quoteRows.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
+            let legacyQuotes = [];
+            try {
+                legacyQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+            } catch (error) {
+                legacyQuotes = [];
+            }
+
+            legacyQuotes.forEach((text, legacyIndex) => {
+                const key = `legacy|${text}|${legacyIndex}`;
+                if (seenKeys.has(key)) return;
+                quoteRows.push({
+                    type: 'legacy',
+                    username: 'unknown',
+                    displayName: 'Unknown',
+                    text,
+                    wordCount: String(text).split(/\s+/).filter(Boolean).length,
+                    addedAt: '',
+                    legacyIndex
+                });
+            });
+
+            return quoteRows.sort((a, b) => {
+                if (!a.addedAt) return 1;
+                if (!b.addedAt) return -1;
+                return new Date(b.addedAt) - new Date(a.addedAt);
+            });
         }
 
         function renderAdminQuoteTable() {
@@ -110,28 +140,57 @@
                 return;
             }
 
-            quotes.forEach((quote, rowIndex) => {
+            quotes.forEach((quote) => {
                 const row = document.createElement('tr');
                 row.dataset.username = quote.username;
                 row.dataset.quoteIndex = quote.index;
+                row.dataset.type = quote.type;
+                if (quote.type === 'legacy') {
+                    row.dataset.legacyIndex = quote.legacyIndex;
+                }
                 row.innerHTML = `
                     <td>${escapeHtml(quote.text)}</td>
                     <td>${escapeHtml(quote.displayName || quote.username)}</td>
                     <td>${quote.wordCount}</td>
                     <td>${formatShortDate(quote.addedAt)}</td>
-                    <td><button class="delete-quote-btn" data-username="${escapeHtml(quote.username)}" data-index="${quote.index}">Delete</button></td>
+                    <td><button class="delete-quote-btn" data-type="${quote.type}" data-username="${escapeHtml(quote.username)}" data-index="${quote.index}" data-legacy-index="${quote.legacyIndex || ''}">Delete</button></td>
                 `;
                 adminQuoteBody.appendChild(row);
             });
 
             document.querySelectorAll('.delete-quote-btn').forEach((button) => {
                 button.addEventListener('click', function () {
-                    deleteQuote(this.dataset.username, Number(this.dataset.index));
+                    deleteQuote(
+                        this.dataset.username,
+                        Number(this.dataset.index),
+                        this.dataset.type,
+                        this.dataset.legacyIndex !== undefined && this.dataset.legacyIndex !== '' ? Number(this.dataset.legacyIndex) : null
+                    );
                 });
             });
         }
 
-        function deleteQuote(username, quoteIndex) {
+        function deleteQuote(username, quoteIndex, quoteType, legacyIndex) {
+            if (quoteType === 'legacy') {
+                let legacyQuotes = [];
+                try {
+                    legacyQuotes = JSON.parse(localStorage.getItem('quotes')) || [];
+                } catch (error) {
+                    legacyQuotes = [];
+                }
+
+                if (legacyIndex === null || legacyIndex === undefined || !legacyQuotes[legacyIndex]) {
+                    showAdminStatus('Unable to delete that legacy quote.', true);
+                    return;
+                }
+
+                legacyQuotes.splice(legacyIndex, 1);
+                localStorage.setItem('quotes', JSON.stringify(legacyQuotes));
+                renderAdminQuoteTable();
+                showAdminStatus('Legacy quote deleted successfully.');
+                return;
+            }
+
             const user = getUser(username);
             if (!user || !Array.isArray(user.quotes) || !user.quotes[quoteIndex]) {
                 showAdminStatus('Unable to delete that quote. It may already be removed.', true);
