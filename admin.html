@@ -212,7 +212,7 @@
         }
 
         unlockBtn.addEventListener('click', function () {
-            const password = adminPasswordInput.value;
+            const password = adminPasswordInput.value.trim();
             if (password === ADMIN_PASSWORD) {
                 setAdminUnlocked(true);
                 renderAdminPage();
