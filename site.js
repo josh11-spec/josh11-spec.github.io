@@ -15,28 +15,23 @@ function saveUsers(users) {
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
 }
 
-function normalizeEmail(email) {
-    return String(email || "").trim().toLowerCase();
-}
-
-function isValidEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+function normalizeUsername(username) {
+    return String(username || "").trim().toLowerCase();
 }
 
 function getCurrentUserKey() {
-    return localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    return localStorage.getItem(STORAGE_KEYS.CURRENT_USER) || sessionStorage.getItem(STORAGE_KEYS.CURRENT_USER);
 }
 
 function getCurrentUser() {
-    const email = getCurrentUserKey();
-    if (!email) return null;
-    const user = getUser(email);
-    return user && user.verified ? user : null;
+    const username = getCurrentUserKey();
+    if (!username) return null;
+    return getUser(username);
 }
 
-function getUser(email) {
+function getUser(username) {
     const users = getUsers();
-    return users[normalizeEmail(email)] || null;
+    return users[normalizeUsername(username)] || null;
 }
 
 function getAllUserQuotes() {
@@ -48,7 +43,7 @@ function getAllUserQuotes() {
 
         user.quotes.forEach((quote) => {
             allQuotes.push({
-                author: user.email,
+                author: user.displayName || user.username,
                 text: quote.text,
                 wordCount: quote.wordCount,
                 addedAt: quote.addedAt
@@ -59,18 +54,16 @@ function getAllUserQuotes() {
     return allQuotes.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
 }
 
-function createDisplayName(email) {
-    const parts = String(email).split("@")[0].replace(/[._]/g, " ").split(" ");
-    return parts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+function hashPassword(password) {
+    return btoa(unescape(encodeURIComponent(String(password))));
 }
 
-function createUser(email) {
-    const normalized = normalizeEmail(email);
+function createUser(username, password) {
+    const normalized = normalizeUsername(username);
     return {
-        email: normalized,
-        displayName: createDisplayName(normalized),
-        verified: false,
-        verificationCode: null,
+        username: normalized,
+        displayName: String(username).trim(),
+        password: hashPassword(password),
         createdAt: new Date().toISOString(),
         streakDays: 1,
         dailyUsageCount: 0,
@@ -81,59 +74,46 @@ function createUser(email) {
 
 function saveUser(user) {
     const users = getUsers();
-    users[normalizeEmail(user.email)] = user;
+    users[normalizeUsername(user.username)] = user;
     saveUsers(users);
 }
 
-function createOrGetUser(email) {
-    const normalized = normalizeEmail(email);
-    const users = getUsers();
-    let user = users[normalized];
-
-    if (!user) {
-        user = createUser(normalized);
-        users[normalized] = user;
-        saveUsers(users);
+function registerUser(username, password) {
+    const normalized = normalizeUsername(username);
+    if (!normalized || getUser(normalized)) {
+        return null;
     }
 
+    const user = createUser(username, password);
+    saveUser(user);
     return user;
 }
 
-function generateVerificationCode() {
-    return String(Math.floor(100000 + Math.random() * 900000));
+function authenticateUser(username, password) {
+    const user = getUser(username);
+    if (!user) return false;
+    return user.password === hashPassword(password);
 }
 
-function sendVerificationCode(email) {
-    const user = createOrGetUser(email);
-    const verificationCode = generateVerificationCode();
-    user.verificationCode = verificationCode;
-    saveUser(user);
-    return verificationCode;
-}
-
-function verifyUser(email, code) {
-    const user = getUser(email);
-    if (!user || user.verificationCode !== code) {
-        return false;
+function loginUser(username, password, remember = true) {
+    const normalized = normalizeUsername(username);
+    const user = getUser(normalized);
+    if (!user || user.password !== hashPassword(password)) {
+        return null;
     }
 
-    user.verified = true;
-    user.verificationCode = null;
-    saveUser(user);
-    setCurrentUser(user.email);
-    return true;
-}
+    if (remember) {
+        localStorage.setItem(STORAGE_KEYS.CURRENT_USER, normalized);
+    } else {
+        sessionStorage.setItem(STORAGE_KEYS.CURRENT_USER, normalized);
+    }
 
-function setCurrentUser(email) {
-    const user = getUser(email);
-    if (!user || !user.verified) return null;
-
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, normalizeEmail(email));
     return user;
 }
 
 function clearCurrentUser() {
     localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    sessionStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
 }
 
 function getTodayKey() {

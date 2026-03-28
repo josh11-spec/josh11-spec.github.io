@@ -148,6 +148,19 @@ input::placeholder {
     display: none;
 }
 
+.remember-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #f0f0f0;
+}
+
+.login-note {
+    margin-top: 1rem;
+    color: #d9d9d9;
+    font-size: 0.95rem;
+}
+
 .verification-actions {
     display: flex;
     flex-wrap: wrap;

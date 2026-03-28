@@ -128,7 +128,7 @@ function updateUserUI() {
 
         userPanel.innerHTML = `
             <div class="user-panel-card">
-                <p>Signed in as <strong>${escapeHtml(user.email)}</strong></p>
+                <p>Signed in as <strong>${escapeHtml(user.displayName || user.username)}</strong></p>
                 <p>Streak: <strong>${user.streakDays}</strong> day(s)</p>
                 <p>Today's uses: <strong>${user.dailyUsageCount}</strong></p>
                 <p>Saved quotes: <strong>${user.quotes.length}</strong></p>
