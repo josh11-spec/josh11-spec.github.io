@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuoteGen Login</title>
+    <link rel="stylesheet" href="QGPage1.css">
+</head>
+<body>
+    <div class="top-links">
+        <a class="back-home" href="index.html">← Home</a>
+    </div>
+
+    <div class="container">
+        <h1>QuoteGen Login</h1>
+        <div id="loginStatus" class="login-status"></div>
+        <form id="loginForm" class="login-form">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter a username" autocomplete="username">
+            <button type="submit">Continue</button>
+        </form>
+    </div>
+
+    <script src="site.js"></script>
+    <script>
+        const loginForm = document.getElementById('loginForm');
+        const loginStatus = document.getElementById('loginStatus');
+        const usernameInput = document.getElementById('username');
+
+        const currentUser = getCurrentUser();
+
+        function renderLoginStatus() {
+            if (currentUser) {
+                loginForm.style.display = 'none';
+                loginStatus.innerHTML = `
+                    <p>You are signed in as <strong>${escapeHtml(currentUser.name)}</strong>.</p>
+                    <p>Streak: <strong>${currentUser.streakDays}</strong> day(s)</p>
+                    <p>Today's uses: <strong>${currentUser.dailyUsageCount}</strong></p>
+                    <p><a href="QGPage1.html">Go to Quote Generator</a> or <a href="#" id="logoutLink">Logout</a></p>
+                `;
+
+                document.getElementById('logoutLink').addEventListener('click', function (event) {
+                    event.preventDefault();
+                    clearCurrentUser();
+                    location.reload();
+                });
+            }
+        }
+
+        loginForm.addEventListener('submit', function (event) {
+            event.preventDefault();
+            const username = usernameInput.value.trim();
+
+            if (!username) {
+                alert('Please enter a username to continue.');
+                return;
+            }
+
+            setCurrentUser(username);
+            window.location.href = 'QGPage1.html';
+        });
+
+        renderLoginStatus();
+    </script>
+</body>
+</html>

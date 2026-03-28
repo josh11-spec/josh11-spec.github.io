@@ -120,4 +120,74 @@ input::placeholder {
     text-shadow: 0 0 8px rgba(255, 65, 65, 0.55);
 }
 
+.user-panel {
+    margin-bottom: 1.5rem;
+}
+
+.user-panel-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 0, 0, 0.25);
+    border-radius: 14px;
+    padding: 1rem 1.2rem;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.user-panel-card p {
+    margin: 0.45rem 0;
+    color: #f0f0f0;
+}
+
+.quote-dashboard {
+    margin-top: 2rem;
+    text-align: left;
+}
+
+.quote-dashboard h2 {
+    color: #ff6f6f;
+    margin-bottom: 1rem;
+}
+
+.stats-grid {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.quote-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    background: rgba(18, 18, 18, 0.95);
+    border: 1px solid rgba(255, 0, 0, 0.25);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.quote-table th,
+.quote-table td {
+    padding: 0.95rem 1rem;
+    border-bottom: 1px solid rgba(255, 0, 0, 0.14);
+}
+
+.quote-table th {
+    background: rgba(255, 0, 0, 0.12);
+    color: #f9f9f9;
+    text-align: left;
+}
+
+.quote-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.quote-table td {
+    color: #e4e4e4;
+}
+
+.quote-table td[colspan="3"] {
+    text-align: center;
+    padding: 1.5rem;
+    color: #d1d1d1;
+}
+
 

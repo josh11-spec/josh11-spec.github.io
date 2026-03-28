@@ -12,6 +12,7 @@
         <nav class="main-nav">
             <a href="index.html" class="active">Home</a>
             <a href="QGPage1.html">Generator</a>
+            <a href="login.html">Login</a>
             <a href="#features">Features</a>
             <a href="#about">About</a>
         </nav>
@@ -23,6 +24,8 @@
             <p>Discover daily inspiration, save custom quotes, and fuel your creativity.</p>
             <a class="cta" href="QGPage1.html">Open Quote Generator</a>
         </section>
+
+        <section class="user-summary" id="userSummary"></section>
 
         <section id="features" class="features">
             <h2>What You Can Do</h2>
@@ -51,5 +54,21 @@
     <footer class="site-footer">
         <p>© 2026 QuoteGen. Built with passion.</p>
     </footer>
+    <script src="site.js"></script>
+    <script>
+        const userSummary = document.getElementById('userSummary');
+        const currentUser = getCurrentUser();
+
+        if (currentUser) {
+            userSummary.innerHTML = `
+                <div class="user-card">
+                    <h2>Welcome back, ${escapeHtml(currentUser.name)}</h2>
+                    <p>Current streak: <strong>${currentUser.streakDays}</strong> day(s)</p>
+                    <p>Today's uses: <strong>${currentUser.dailyUsageCount}</strong></p>
+                    <p>Custom quotes saved: <strong>${currentUser.quotes.length}</strong></p>
+                </div>
+            `;
+        }
+    </script>
 </body>
 </html>

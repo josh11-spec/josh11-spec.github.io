@@ -116,6 +116,30 @@ body {
     color: #ff4747;
 }
 
+.user-summary {
+    margin: 2rem auto 0;
+    max-width: 900px;
+    padding: 0 1rem;
+}
+
+.user-card {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(241, 218, 147, 0.24);
+    border-radius: 14px;
+    padding: 1.3rem 1.25rem;
+    box-shadow: 0 10px 24px rgba(241, 218, 147, 0.12);
+}
+
+.user-card h2 {
+    margin-bottom: 0.75rem;
+    color: #ffd86b;
+}
+
+.user-card p {
+    margin: 0.5rem 0;
+    color: #e8e2b7;
+}
+
 .site-footer {
     text-align: center;
     padding: 1.4rem;
