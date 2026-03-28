@@ -15,24 +15,62 @@ function saveUsers(users) {
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
 }
 
+function normalizeEmail(email) {
+    return String(email || "").trim().toLowerCase();
+}
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 function getCurrentUserKey() {
     return localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
 }
 
 function getCurrentUser() {
-    const username = getCurrentUserKey();
-    if (!username) return null;
-    return getUser(username);
+    const email = getCurrentUserKey();
+    if (!email) return null;
+    const user = getUser(email);
+    return user && user.verified ? user : null;
 }
 
-function getUser(username) {
+function getUser(email) {
     const users = getUsers();
-    return users[username] || null;
+    return users[normalizeEmail(email)] || null;
 }
 
-function createUser(username) {
+function getAllUserQuotes() {
+    const users = getUsers();
+    const allQuotes = [];
+
+    Object.values(users).forEach((user) => {
+        if (!Array.isArray(user.quotes)) return;
+
+        user.quotes.forEach((quote) => {
+            allQuotes.push({
+                author: user.email,
+                text: quote.text,
+                wordCount: quote.wordCount,
+                addedAt: quote.addedAt
+            });
+        });
+    });
+
+    return allQuotes.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
+}
+
+function createDisplayName(email) {
+    const parts = String(email).split("@")[0].replace(/[._]/g, " ").split(" ");
+    return parts.map((part) => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+}
+
+function createUser(email) {
+    const normalized = normalizeEmail(email);
     return {
-        name: username,
+        email: normalized,
+        displayName: createDisplayName(normalized),
+        verified: false,
+        verificationCode: null,
         createdAt: new Date().toISOString(),
         streakDays: 1,
         dailyUsageCount: 0,
@@ -43,24 +81,54 @@ function createUser(username) {
 
 function saveUser(user) {
     const users = getUsers();
-    users[user.name] = user;
+    users[normalizeEmail(user.email)] = user;
     saveUsers(users);
 }
 
-function setCurrentUser(username) {
-    const key = username.trim();
-    if (!key) return null;
-
+function createOrGetUser(email) {
+    const normalized = normalizeEmail(email);
     const users = getUsers();
-    let user = users[key];
+    let user = users[normalized];
 
     if (!user) {
-        user = createUser(key);
-        users[key] = user;
+        user = createUser(normalized);
+        users[normalized] = user;
+        saveUsers(users);
     }
 
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, key);
-    saveUsers(users);
+    return user;
+}
+
+function generateVerificationCode() {
+    return String(Math.floor(100000 + Math.random() * 900000));
+}
+
+function sendVerificationCode(email) {
+    const user = createOrGetUser(email);
+    const verificationCode = generateVerificationCode();
+    user.verificationCode = verificationCode;
+    saveUser(user);
+    return verificationCode;
+}
+
+function verifyUser(email, code) {
+    const user = getUser(email);
+    if (!user || user.verificationCode !== code) {
+        return false;
+    }
+
+    user.verified = true;
+    user.verificationCode = null;
+    saveUser(user);
+    setCurrentUser(user.email);
+    return true;
+}
+
+function setCurrentUser(email) {
+    const user = getUser(email);
+    if (!user || !user.verified) return null;
+
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, normalizeEmail(email));
     return user;
 }
 

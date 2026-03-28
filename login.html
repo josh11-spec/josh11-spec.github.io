@@ -15,9 +15,19 @@
         <h1>QuoteGen Login</h1>
         <div id="loginStatus" class="login-status"></div>
         <form id="loginForm" class="login-form">
-            <label for="username">Username</label>
-            <input type="text" id="username" placeholder="Enter a username" autocomplete="username">
-            <button type="submit">Continue</button>
+            <label for="email">Email address</label>
+            <input type="email" id="email" placeholder="you@example.com" autocomplete="email">
+            <button type="button" id="sendCodeBtn">Send verification code</button>
+
+            <div id="verificationSection" class="verification-section hidden">
+                <label for="verificationCode">Verification code</label>
+                <input type="text" id="verificationCode" placeholder="Enter code">
+                <div class="verification-actions">
+                    <button type="button" id="verifyCodeBtn">Verify and login</button>
+                    <button type="button" id="resendCodeBtn">Resend code</button>
+                </div>
+                <div id="verificationHint" class="verification-hint"></div>
+            </div>
         </form>
     </div>
 
@@ -25,15 +35,39 @@
     <script>
         const loginForm = document.getElementById('loginForm');
         const loginStatus = document.getElementById('loginStatus');
-        const usernameInput = document.getElementById('username');
+        const emailInput = document.getElementById('email');
+        const sendCodeBtn = document.getElementById('sendCodeBtn');
+        const verificationSection = document.getElementById('verificationSection');
+        const verificationCodeInput = document.getElementById('verificationCode');
+        const verifyCodeBtn = document.getElementById('verifyCodeBtn');
+        const resendCodeBtn = document.getElementById('resendCodeBtn');
+        const verificationHint = document.getElementById('verificationHint');
 
+        let pendingEmail = null;
         const currentUser = getCurrentUser();
+
+        function showStatus(message, isError = false) {
+            loginStatus.innerHTML = `<p>${escapeHtml(message)}</p>`;
+            loginStatus.style.color = isError ? '#ff8a8a' : '#d1d1d1';
+        }
+
+        function showVerificationSection(email, code) {
+            pendingEmail = email;
+            verificationSection.classList.remove('hidden');
+            verificationHint.innerHTML = `A verification code was sent to <strong>${escapeHtml(email)}</strong>.<br>For this demo, your code is: <strong>${escapeHtml(code)}</strong>`;
+        }
+
+        function hideVerificationSection() {
+            verificationSection.classList.add('hidden');
+            verificationHint.innerHTML = '';
+            verificationCodeInput.value = '';
+        }
 
         function renderLoginStatus() {
             if (currentUser) {
                 loginForm.style.display = 'none';
                 loginStatus.innerHTML = `
-                    <p>You are signed in as <strong>${escapeHtml(currentUser.name)}</strong>.</p>
+                    <p>You are signed in as <strong>${escapeHtml(currentUser.email)}</strong>.</p>
                     <p>Streak: <strong>${currentUser.streakDays}</strong> day(s)</p>
                     <p>Today's uses: <strong>${currentUser.dailyUsageCount}</strong></p>
                     <p><a href="QGPage1.html">Go to Quote Generator</a> or <a href="#" id="logoutLink">Logout</a></p>
@@ -44,20 +78,59 @@
                     clearCurrentUser();
                     location.reload();
                 });
+            } else {
+                showStatus('Enter your email to receive a verification code and sign in.');
             }
         }
 
-        loginForm.addEventListener('submit', function (event) {
-            event.preventDefault();
-            const username = usernameInput.value.trim();
-
-            if (!username) {
-                alert('Please enter a username to continue.');
+        sendCodeBtn.addEventListener('click', function () {
+            const email = emailInput.value.trim();
+            if (!isValidEmail(email)) {
+                showStatus('Please enter a valid email address.', true);
                 return;
             }
 
-            setCurrentUser(username);
-            window.location.href = 'QGPage1.html';
+            const user = getUser(email);
+            if (user && user.verified) {
+                setCurrentUser(email);
+                window.location.href = 'QGPage1.html';
+                return;
+            }
+
+            const code = sendVerificationCode(email);
+            showVerificationSection(email, code);
+            showStatus('Verification code generated. Enter it below to complete login.');
+        });
+
+        verifyCodeBtn.addEventListener('click', function () {
+            const code = verificationCodeInput.value.trim();
+            if (!pendingEmail) {
+                showStatus('Please enter your email first and request a verification code.', true);
+                return;
+            }
+
+            if (!code) {
+                showStatus('Enter the verification code sent to your email.', true);
+                return;
+            }
+
+            if (verifyUser(pendingEmail, code)) {
+                window.location.href = 'QGPage1.html';
+            } else {
+                showStatus('Incorrect verification code. Try again or resend the code.', true);
+            }
+        });
+
+        resendCodeBtn.addEventListener('click', function () {
+            const email = pendingEmail || emailInput.value.trim();
+            if (!isValidEmail(email)) {
+                showStatus('Please enter a valid email address first.', true);
+                return;
+            }
+
+            const code = sendVerificationCode(email);
+            showVerificationSection(email, code);
+            showStatus('A new verification code was generated. Enter it below.');
         });
 
         renderLoginStatus();

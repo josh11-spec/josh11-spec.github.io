@@ -62,7 +62,7 @@
         if (currentUser) {
             userSummary.innerHTML = `
                 <div class="user-card">
-                    <h2>Welcome back, ${escapeHtml(currentUser.name)}</h2>
+                    <h2>Welcome back, ${escapeHtml(currentUser.email)}</h2>
                     <p>Current streak: <strong>${currentUser.streakDays}</strong> day(s)</p>
                     <p>Today's uses: <strong>${currentUser.dailyUsageCount}</strong></p>
                     <p>Custom quotes saved: <strong>${currentUser.quotes.length}</strong></p>

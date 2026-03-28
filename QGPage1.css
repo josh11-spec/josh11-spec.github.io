@@ -120,6 +120,68 @@ input::placeholder {
     text-shadow: 0 0 8px rgba(255, 65, 65, 0.55);
 }
 
+.login-status {
+    margin-bottom: 1.2rem;
+    color: #f0f0f0;
+    line-height: 1.4;
+}
+
+.login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.login-form label {
+    color: #f5f5f5;
+    font-weight: 600;
+}
+
+.verification-section {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 0, 0, 0.24);
+    border-radius: 12px;
+    padding: 1rem;
+}
+
+.hidden {
+    display: none;
+}
+
+.verification-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.7rem;
+    margin-top: 0.7rem;
+}
+
+.verification-hint {
+    margin-top: 0.85rem;
+    color: #ffd9d9;
+    font-size: 0.95rem;
+}
+
+.public-quote-section {
+    margin-top: 2rem;
+}
+
+.public-quote-section h2 {
+    color: #ff8a8a;
+    margin-bottom: 1rem;
+}
+
+.public-table th, .public-table td {
+    padding: 0.9rem 1rem;
+}
+
+.public-table th {
+    background: rgba(255, 0, 0, 0.12);
+}
+
+.public-table tbody tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.04);
+}
+
 .user-panel {
     margin-bottom: 1.5rem;
 }

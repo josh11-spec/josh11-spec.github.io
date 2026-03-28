@@ -5,6 +5,7 @@ let newQuoteInput = document.getElementById("newQuote");
 let loginAction = document.getElementById("loginAction");
 let userPanel = document.getElementById("userPanel");
 let quoteTableBody = document.getElementById("quoteTableBody");
+let publicQuoteBody = document.getElementById("publicQuoteBody");
 
 
 let defaultQuotes = [
@@ -89,6 +90,30 @@ function renderQuoteTable() {
     }
 }
 
+function renderPublicQuoteFeed() {
+    const quotes = getAllUserQuotes();
+    publicQuoteBody.innerHTML = "";
+
+    if (quotes.length) {
+        quotes.forEach((quote) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${escapeHtml(quote.text)}</td>
+                <td>${escapeHtml(quote.author)}</td>
+                <td>${quote.wordCount}</td>
+                <td>${formatShortDate(quote.addedAt)}</td>
+            `;
+            publicQuoteBody.appendChild(row);
+        });
+    } else {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td colspan="4">No community quotes yet. Add one to share it with others.</td>
+        `;
+        publicQuoteBody.appendChild(row);
+    }
+}
+
 function updateUserUI() {
     const user = getCurrentUser();
 
@@ -103,7 +128,7 @@ function updateUserUI() {
 
         userPanel.innerHTML = `
             <div class="user-panel-card">
-                <p>Signed in as <strong>${escapeHtml(user.name)}</strong></p>
+                <p>Signed in as <strong>${escapeHtml(user.email)}</strong></p>
                 <p>Streak: <strong>${user.streakDays}</strong> day(s)</p>
                 <p>Today's uses: <strong>${user.dailyUsageCount}</strong></p>
                 <p>Saved quotes: <strong>${user.quotes.length}</strong></p>
@@ -121,6 +146,7 @@ function updateUserUI() {
     }
 
     renderQuoteTable();
+    renderPublicQuoteFeed();
 }
 
 updateUserUI();
