@@ -1,0 +1,126 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(120deg, #000 0%, #0d0d0d 45%, #1b1b1b 100%);
+    color: #f8f8f8;
+    min-height: 100vh;
+    line-height: 1.5;
+}
+
+.site-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid rgba(255, 0, 0, 0.25);
+    position: sticky;
+    top: 0;
+    background: rgba(0, 0, 0, 0.86);
+    box-shadow: 0 5px 20px rgba(255, 0, 0, 0.25);
+    z-index: 100;
+}
+
+.logo {
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #ff3737;
+}
+
+.main-nav a {
+    color: #cccccc;
+    text-decoration: none;
+    margin-left: 1rem;
+    transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.main-nav a.active,
+.main-nav a:hover {
+    color: #ff3d3d;
+    text-shadow: 0 0 12px rgba(255, 61, 61, 0.75);
+}
+
+.hero {
+    text-align: center;
+    margin: 5rem auto 3rem;
+    max-width: 760px;
+    padding: 0 1rem;
+}
+
+.hero h1 {
+    font-size: clamp(2rem, 3.8vw, 3.4rem);
+    margin-bottom: 1rem;
+    color: #ff3f3f;
+    text-shadow: 0 0 16px rgba(255, 63, 63, 0.5);
+}
+
+.hero p {
+    font-size: 1.15rem;
+    margin-bottom: 1.7rem;
+    color: #e6e6e6;
+}
+
+.cta {
+    display: inline-block;
+    padding: 0.9rem 1.6rem;
+    background-color: #c60000;
+    color: #fff;
+    border-radius: 999px;
+    text-decoration: none;
+    font-weight: 700;
+    border: 1px solid rgba(255, 61, 61, 0.9);
+    box-shadow: 0 8px 20px rgba(255, 0, 0, 0.4);
+    transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.cta:hover {
+    transform: translateY(-2px);
+    background: #ff4f4f;
+    box-shadow: 0 12px 28px rgba(255, 0, 0, 0.55);
+}
+
+.features,
+.about {
+    margin: 2.5rem auto;
+    max-width: 900px;
+    padding: 0 1rem;
+}
+
+.features h2,
+.about h2 {
+    margin-bottom: 1rem;
+    color: #f1da93;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1rem;
+}
+
+.feature-grid article {
+    background: rgba(18, 10, 14, 0.82);
+    border: 1px solid rgba(255, 0, 0, 0.24);
+    border-radius: 12px;
+    padding: 1.2rem;
+    box-shadow: 0 10px 25px rgba(255, 0, 0, 0.15);
+}
+
+.feature-grid h3 {
+    margin-bottom: 0.6rem;
+    color: #ff4747;
+}
+
+.site-footer {
+    text-align: center;
+    padding: 1.4rem;
+    border-top: 1px solid rgba(255, 0, 0, 0.22);
+    margin-top: 3rem;
+    color: #c2c1c1;
+    background: rgba(0, 0, 0, 0.8);
+}
