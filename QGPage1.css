@@ -174,26 +174,6 @@ input::placeholder {
     font-size: 0.95rem;
 }
 
-.admin-link-row {
-    margin-top: 1.5rem;
-    text-align: center;
-}
-
-.delete-btn {
-    background: #ff3939;
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 0.5rem 0.85rem;
-    cursor: pointer;
-    transition: transform 0.2s ease, background 0.2s ease;
-}
-
-.delete-btn:hover {
-    background: #ff6161;
-    transform: translateY(-1px);
-}
-
 .public-quote-section {
     margin-top: 2rem;
 }

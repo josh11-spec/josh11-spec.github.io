@@ -49,7 +49,15 @@
         function renderLoginStatus() {
             if (currentUser) {
                 loginForm.style.display = 'none';
-                showStatus(`You are signed in as <strong>${escapeHtml(currentUser.displayName || currentUser.username)}</strong>. Go to <a href="QGPage1.html">Quote Generator</a> or refresh the page to continue.`);
+                loginStatus.innerHTML = `
+                    <p>You are signed in as <strong>${escapeHtml(currentUser.displayName || currentUser.username)}</strong>.</p>
+                    <p><a href="QGPage1.html">Go to Quote Generator</a> or <a href="#" id="logoutLink">Logout</a></p>
+                `;
+                document.getElementById('logoutLink').addEventListener('click', function (event) {
+                    event.preventDefault();
+                    clearCurrentUser();
+                    location.reload();
+                });
             } else {
                 showStatus('Enter your username and password to sign in or register.');
             }

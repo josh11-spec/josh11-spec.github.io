@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuoteGen Admin</title>
+    <link rel="stylesheet" href="QGPage1.css">
+</head>
+<body>
+    <div class="top-links">
+        <a class="back-home" href="index.html">← Home</a>
+        <a class="back-home" href="QGPage1.html">Quote Generator</a>
+    </div>
+
+    <div class="container">
+        <h1>QuoteGen Admin</h1>
+        <div id="adminStatus" class="login-status"></div>
+
+        <div id="adminLock" class="admin-lock">
+            <p>Enter the admin password to unlock the quote moderation page.</p>
+            <input type="password" id="adminPassword" placeholder="Enter admin password">
+            <button id="unlockBtn">Unlock</button>
+        </div>
+
+        <div id="adminPanel" class="admin-panel hidden">
+            <h2>Community Quotes Moderation</h2>
+            <p>Only authorized users may delete quotes from the community feed.</p>
+            <div class="quote-dashboard admin-dashboard">
+                <table class="quote-table public-table">
+                    <thead>
+                        <tr>
+                            <th>Quote</th>
+                            <th>Author</th>
+                            <th>Words</th>
+                            <th>Added</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminQuoteBody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="site.js"></script>
+    <script>
+        const ADMIN_PASSWORD = 'GenratorQ';
+        const adminPasswordInput = document.getElementById('adminPassword');
+        const unlockBtn = document.getElementById('unlockBtn');
+        const adminStatus = document.getElementById('adminStatus');
+        const adminLock = document.getElementById('adminLock');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminQuoteBody = document.getElementById('adminQuoteBody');
+
+        function isAdminUnlocked() {
+            return sessionStorage.getItem('quoteGenAdminUnlocked') === 'true';
+        }
+
+        function setAdminUnlocked(value) {
+            sessionStorage.setItem('quoteGenAdminUnlocked', value ? 'true' : 'false');
+        }
+
+        function showAdminStatus(message, isError = false) {
+            adminStatus.innerHTML = `<p>${escapeHtml(message)}</p>`;
+            adminStatus.style.color = isError ? '#ff8a8a' : '#d1d1d1';
+        }
+
+        function renderAdminPage() {
+            if (isAdminUnlocked()) {
+                adminLock.classList.add('hidden');
+                adminPanel.classList.remove('hidden');
+                showAdminStatus('Admin unlocked. You may delete community quotes below.');
+                renderAdminQuoteTable();
+            } else {
+                adminLock.classList.remove('hidden');
+                adminPanel.classList.add('hidden');
+                showAdminStatus('Enter the admin password to unlock the moderation panel.');
+            }
+        }
+
+        function getAllQuotesWithSource() {
+            const users = getUsers();
+            const quoteRows = [];
+
+            Object.values(users).forEach((user) => {
+                if (!Array.isArray(user.quotes)) return;
+                user.quotes.forEach((quote, index) => {
+                    quoteRows.push({
+                        username: user.username,
+                        displayName: user.displayName,
+                        text: quote.text,
+                        wordCount: quote.wordCount,
+                        addedAt: quote.addedAt,
+                        index
+                    });
+                });
+            });
+
+            return quoteRows.sort((a, b) => new Date(b.addedAt) - new Date(a.addedAt));
+        }
+
+        function renderAdminQuoteTable() {
+            const quotes = getAllQuotesWithSource();
+            adminQuoteBody.innerHTML = '';
+
+            if (quotes.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="5">No community quotes are currently stored.</td>`;
+                adminQuoteBody.appendChild(row);
+                return;
+            }
+
+            quotes.forEach((quote, rowIndex) => {
+                const row = document.createElement('tr');
+                row.dataset.username = quote.username;
+                row.dataset.quoteIndex = quote.index;
+                row.innerHTML = `
+                    <td>${escapeHtml(quote.text)}</td>
+                    <td>${escapeHtml(quote.displayName || quote.username)}</td>
+                    <td>${quote.wordCount}</td>
+                    <td>${formatShortDate(quote.addedAt)}</td>
+                    <td><button class="delete-quote-btn" data-username="${escapeHtml(quote.username)}" data-index="${quote.index}">Delete</button></td>
+                `;
+                adminQuoteBody.appendChild(row);
+            });
+
+            document.querySelectorAll('.delete-quote-btn').forEach((button) => {
+                button.addEventListener('click', function () {
+                    deleteQuote(this.dataset.username, Number(this.dataset.index));
+                });
+            });
+        }
+
+        function deleteQuote(username, quoteIndex) {
+            const user = getUser(username);
+            if (!user || !Array.isArray(user.quotes) || !user.quotes[quoteIndex]) {
+                showAdminStatus('Unable to delete that quote. It may already be removed.', true);
+                return;
+            }
+
+            user.quotes.splice(quoteIndex, 1);
+            saveUser(user);
+            renderAdminQuoteTable();
+            showAdminStatus('Quote deleted successfully.');
+        }
+
+        unlockBtn.addEventListener('click', function () {
+            const password = adminPasswordInput.value;
+            if (password === ADMIN_PASSWORD) {
+                setAdminUnlocked(true);
+                renderAdminPage();
+            } else {
+                showAdminStatus('Incorrect admin password.', true);
+            }
+        });
+
+        renderAdminPage();
+    </script>
+</body>
+</html>
