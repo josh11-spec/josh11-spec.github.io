@@ -7,30 +7,31 @@ let userPanel = document.getElementById("userPanel");
 let quoteTableBody = document.getElementById("quoteTableBody");
 let publicQuoteBody = document.getElementById("publicQuoteBody");
 
-
 let defaultQuotes = [
-    "Power grows in the quiet mind.",
-    "A warrior is built in silence.",
-    "Dreams are whispers from the future.",
-    "Fear is only courage waiting to awaken.",
-    "The night teaches what the day forgets."
+    { text: "Power grows in the quiet mind.", author: "QuoteGen" },
+    { text: "A warrior is built in silence.", author: "QuoteGen" },
+    { text: "Dreams are whispers from the future.", author: "QuoteGen" },
+    { text: "Fear is only courage waiting to awaken.", author: "QuoteGen" },
+    { text: "The night teaches what the day forgets.", author: "QuoteGen" }
 ];
 
-let storedQuotes = [];
+function getAvailableQuotes() {
+    const userQuotes = getAllUserQuotes().map((quote) => ({
+        text: quote.text,
+        author: quote.author || "User"
+    }));
 
-try {
-    storedQuotes = JSON.parse(localStorage.getItem("quotes")) || [];
-} catch (error) {
-    storedQuotes = [];
+    return defaultQuotes.concat(userQuotes);
 }
-
-let quotes = storedQuotes.length ? storedQuotes : defaultQuotes;
 
 
 function generateQuote(){
-
-    let randomIndex = Math.floor(Math.random() * quotes.length);
-    quoteDisplay.textContent = quotes[randomIndex];
+    const availableQuotes = getAvailableQuotes();
+    const randomIndex = Math.floor(Math.random() * availableQuotes.length);
+    const selected = availableQuotes[randomIndex];
+    quoteDisplay.textContent = selected.author
+        ? `${selected.text} — ${selected.author}`
+        : selected.text;
     const user = recordUserAction();
     if (user) {
         updateUserUI();
@@ -53,8 +54,6 @@ function addQuote(){
         return;
     }
 
-    quotes.push(newQuote);
-    localStorage.setItem("quotes", JSON.stringify(quotes));
     addUserQuote(newQuote);
     recordUserAction();
     updateUserUI();
