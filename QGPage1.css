@@ -8,9 +8,6 @@ body {
     background: linear-gradient(135deg, #ffffff 0%, #f7efe4 45%, #f1e6dc 100%);
     color: #2b2b2b;
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 1rem;
 }
 
