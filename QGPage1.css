@@ -359,6 +359,25 @@ input::placeholder {
     background: rgba(255, 255, 255, 0.04);
 }
 
+@media (max-width: 720px) {
+    .top-links {
+        left: 0.75rem;
+        right: 0.75rem;
+        width: auto;
+        justify-content: flex-start;
+    }
+
+    .top-links a,
+    .top-links button {
+        flex: 1 1 auto;
+        min-width: 120px;
+    }
+
+    .container {
+        padding-top: 5.5rem;
+    }
+}
+
 .dark-mode .login-status,
 .dark-mode .login-note,
 .dark-mode .verification-hint,
