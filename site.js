@@ -119,6 +119,46 @@ function saveUser(user) {
     saveUsers(users);
 }
 
+function notifyAdminQuoteAdded(quoteText) {
+    const currentUser = getCurrentUser();
+    const payload = {
+        text: String(quoteText).trim(),
+        author: currentUser ? (currentUser.displayName || currentUser.username) : 'Unknown',
+        addedAt: new Date().toISOString()
+    };
+
+    localStorage.setItem('quoteGenAdminQuoteAdded', JSON.stringify(payload));
+    localStorage.setItem('quoteGenAdminQuoteAddedSeen', '');
+}
+
+function getAdminQuoteNotification() {
+    try {
+        return JSON.parse(localStorage.getItem('quoteGenAdminQuoteAdded')) || null;
+    } catch (error) {
+        return null;
+    }
+}
+
+function markAdminQuoteNotificationSeen() {
+    const notification = getAdminQuoteNotification();
+    if (notification && notification.addedAt) {
+        localStorage.setItem('quoteGenAdminQuoteAddedSeen', notification.addedAt);
+    }
+}
+
+function isAdminQuoteNotificationNew() {
+    const notification = getAdminQuoteNotification();
+    return notification && notification.addedAt && localStorage.getItem('quoteGenAdminQuoteAddedSeen') !== notification.addedAt;
+}
+
+function registerAdminNotificationListener(callback) {
+    window.addEventListener('storage', function (event) {
+        if (event.key === 'quoteGenAdminQuoteAdded') {
+            callback();
+        }
+    });
+}
+
 function registerUser(username, password) {
     const normalized = normalizeUsername(username);
     if (!normalized || getUser(normalized)) {

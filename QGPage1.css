@@ -222,6 +222,22 @@ input::placeholder {
     display: none;
 }
 
+.notification {
+    background: rgba(255, 229, 216, 0.95);
+    border: 1px solid rgba(217, 135, 99, 0.55);
+    color: #4e2b18;
+    padding: 1rem 1.25rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    text-align: left;
+}
+
+.dark-mode .notification {
+    background: rgba(76, 0, 0, 0.9);
+    border-color: rgba(255, 90, 90, 0.6);
+    color: #f5d6d6;
+}
+
 .remember-row {
     display: flex;
     align-items: center;

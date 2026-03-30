@@ -55,6 +55,7 @@ function addQuote(){
     }
 
     addUserQuote(newQuote);
+    notifyAdminQuoteAdded(newQuote);
     recordUserAction();
     updateUserUI();
 

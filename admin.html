@@ -21,8 +21,7 @@
     </header>
 
     <div class="container">
-        <h1>QuoteGen Admin</h1>
-        <div id="adminStatus" class="login-status"></div>
+        <h1>QuoteGen Admin</h1>        <div id="adminNotification" class="notification hidden"></div>        <div id="adminStatus" class="login-status"></div>
 
         <div id="adminLock" class="admin-lock">
             <p>Enter the admin password to unlock the quote moderation page.</p>
@@ -56,12 +55,43 @@
         const adminPasswordInput = document.getElementById('adminPassword');
         const unlockBtn = document.getElementById('unlockBtn');
         const adminStatus = document.getElementById('adminStatus');
+        const adminNotification = document.getElementById('adminNotification');
         const adminLock = document.getElementById('adminLock');
         const adminPanel = document.getElementById('adminPanel');
         const adminQuoteBody = document.getElementById('adminQuoteBody');
 
         function isAdminUnlocked() {
             return sessionStorage.getItem('quoteGenAdminUnlocked') === 'true';
+        }
+
+        function showAdminNotification(notification) {
+            if (!notification) {
+                adminNotification.classList.add('hidden');
+                adminNotification.innerHTML = '';
+                return;
+            }
+
+            adminNotification.classList.remove('hidden');
+            adminNotification.innerHTML = `New community quote added by <strong>${escapeHtml(notification.author)}</strong>: "${escapeHtml(notification.text)}"`;
+            markAdminQuoteNotificationSeen();
+        }
+
+        function renderAdminNotification() {
+            const notification = getAdminQuoteNotification();
+            if (notification && notification.addedAt && isAdminQuoteNotificationNew()) {
+                showAdminNotification(notification);
+            } else {
+                showAdminNotification(null);
+            }
+        }
+
+        function registerAdminNotificationWatcher() {
+            registerAdminNotificationListener(() => {
+                renderAdminNotification();
+                if (isAdminUnlocked()) {
+                    renderAdminPage();
+                }
+            });
         }
 
         function setAdminUnlocked(value) {
@@ -221,6 +251,8 @@
             }
         });
 
+        renderAdminNotification();
+        registerAdminNotificationWatcher();
         renderAdminPage();
     </script>
 </body>
