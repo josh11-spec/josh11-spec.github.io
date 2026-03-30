@@ -1,7 +1,8 @@
 const STORAGE_KEYS = {
     USERS: "quoteGenUsers",
     CURRENT_USER: "quoteGenCurrentUser",
-    THEME: "quoteGenTheme"
+    THEME: "quoteGenTheme",
+    COMMUNITY_QUOTES: "quoteGenCommunityQuotes"
 };
 
 function getSavedTheme() {
@@ -50,10 +51,6 @@ function getUsers() {
     } catch (error) {
         return {};
     }
-}
-
-function saveUsers(users) {
-    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
 }
 
 function normalizeUsername(username) {
@@ -117,6 +114,38 @@ function saveUser(user) {
     const users = getUsers();
     users[normalizeUsername(user.username)] = user;
     saveUsers(users);
+}
+
+function saveUsers(users) {
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+}
+
+function getCommunityQuotes() {
+    try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEYS.COMMUNITY_QUOTES)) || [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function saveCommunityQuotes(quotes) {
+    localStorage.setItem(STORAGE_KEYS.COMMUNITY_QUOTES, JSON.stringify(quotes));
+}
+
+function addCommunityQuote(user, text) {
+    if (!user || !text || !String(text).trim()) {
+        return;
+    }
+
+    const communityQuotes = getCommunityQuotes();
+    communityQuotes.push({
+        username: user.username,
+        author: user.displayName || user.username,
+        text: String(text).trim(),
+        wordCount: String(text).trim().split(/\s+/).filter(Boolean).length,
+        addedAt: new Date().toISOString()
+    });
+    saveCommunityQuotes(communityQuotes);
 }
 
 function notifyAdminQuoteAdded(quoteText) {
@@ -246,6 +275,7 @@ function addUserQuote(text) {
     });
 
     saveUser(user);
+    addCommunityQuote(user, quote);
     return user;
 }
 

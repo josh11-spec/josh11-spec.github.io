@@ -21,7 +21,9 @@
     </header>
 
     <div class="container">
-        <h1>QuoteGen Admin</h1>        <div id="adminNotification" class="notification hidden"></div>        <div id="adminStatus" class="login-status"></div>
+        <h1>QuoteGen Admin</h1>
+        <div id="adminNotification" class="notification hidden"></div>
+        <div id="adminStatus" class="login-status"></div>
 
         <div id="adminLock" class="admin-lock">
             <p>Enter the admin password to unlock the quote moderation page.</p>
@@ -118,14 +120,30 @@
 
         function getAllQuotesWithSource() {
             const users = getUsers();
+            const communityQuotes = getCommunityQuotes();
             const quoteRows = [];
             const seenKeys = new Set();
+
+            communityQuotes.forEach((quote, index) => {
+                const key = `${quote.username}|${quote.text}|${quote.addedAt}`;
+                seenKeys.add(key);
+                quoteRows.push({
+                    type: 'community',
+                    username: quote.username,
+                    displayName: quote.author,
+                    text: quote.text,
+                    wordCount: quote.wordCount,
+                    addedAt: quote.addedAt,
+                    index
+                });
+            });
 
             Object.values(users).forEach((user) => {
                 if (!Array.isArray(user.quotes)) return;
 
                 user.quotes.forEach((quote, index) => {
                     const key = `${user.username}|${quote.text}|${quote.addedAt}`;
+                    if (seenKeys.has(key)) return;
                     seenKeys.add(key);
                     quoteRows.push({
                         type: 'user',

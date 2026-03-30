@@ -126,6 +126,9 @@ function updateUserUI() {
             location.reload();
         };
 
+        newQuoteInput.disabled = false;
+        addQuoteBtn.disabled = false;
+
         userPanel.innerHTML = `
             <div class="user-panel-card">
                 <p>Signed in as <strong>${escapeHtml(user.displayName || user.username)}</strong></p>
@@ -138,6 +141,10 @@ function updateUserUI() {
         loginAction.textContent = "Login";
         loginAction.href = "login.html";
         loginAction.onclick = null;
+        newQuoteInput.disabled = true;
+        addQuoteBtn.disabled = true;
+        newQuoteInput.placeholder = "Login to add a quote...";
+
         userPanel.innerHTML = `
             <div class="user-panel-card guest">
                 <p><a href="login.html">Login</a> to save quotes and build your streak.</p>
@@ -148,5 +155,6 @@ function updateUserUI() {
     renderQuoteTable();
     renderPublicQuoteFeed();
 }
+
 
 updateUserUI();
